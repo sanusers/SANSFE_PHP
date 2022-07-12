@@ -1,8 +1,8 @@
 <?php
 header( 'Access-Control-Allow-Origin: *' );
 header( 'Access-Control-Allow-Methods: POST, GET, OPTIONS' );
-ini_set( 'error_reporting', E_ALL );
-ini_set( 'display_errors', true );
+//ini_set( 'error_reporting', E_ALL );
+//ini_set( 'display_errors', true );
 session_start();
 date_default_timezone_set( "Asia/Kolkata" );
 
@@ -1244,7 +1244,7 @@ switch ( strtolower( $value[ 0 ] ) ) {
         } else {
             outputJSON( [] );
         }
-        break
+        break;
     case "travel_Distance":
         $sfCode = $_GET[ 'sfCode' ];
         $data = json_decode( $_POST[ 'data' ], true );
