@@ -1265,41 +1265,5 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $query = "select Worked_With_SF_Name, Tour_Date, Worktype_Name_B, Tour_Schedule1 from vwChkTransApproval where Reporting_To_SF='$sfCode'";
         outputJSON( performQuery( $query ) );
         break;
-    case "get/camp_apprlist":
-        $divcode = $_GET[ 'Division_Code' ];
-        $Sf_code = $_GET[ 'Sf_code' ];
-        $Camp_Type = $_GET[ 'Camp_Type' ];
-        $Camp_Code = $_GET[ 'Camp_Code' ];
-        $query = "Select * from Trans_opd_camp_approval where Division_Code='" . $divcode . "' and Camp_Code='" . $Camp_Code . "' and Sf_code='" . $Sf_code . "' and Camp_Type='" . $Camp_Type . "'";
-        $result = performQuery( $query );
-        if ( $result ) {
-            outputJSON( $result );
-        } else {
-            outputJSON( [] );
-        }
-        break;
-    case "get/manager_camplist":
-        $divcode = $_GET[ 'Division_Code' ];
-        $Sf_code = $_GET[ 'Sf_code' ];
-        $Camp_Status = $_GET[ 'Camp_Status' ];
-        $query = "Select * from Trans_opd_camp_approval where Division_Code='$divcode' and Sf_code='$Sf_code' and Camp_Status='$Camp_Status'";
-        $result = performQuery( $query );
-        if ( $result ) {
-            outputJSON( $result );
-        } else {
-            outputJSON( [] );
-        }
-        break;
-    case "get/Camp_taggedlist":
-        $divisionCode = $_GET[ 'divisionCode' ];
-        $OPD_Code = $_GET[ 'OPD_Code' ];
-        $query = "Select * from Map_OPDCamp_Drs_Details where OPD_Code='" . $OPD_Code . "' and Division_Code='" . $divisionCode . "'";
-        $result = performQuery( $query );
-        if ( $result ) {
-            outputJSON( $result );
-        } else {
-            outputJSON( [] );
-        }
-        break;
 }
 ?>
