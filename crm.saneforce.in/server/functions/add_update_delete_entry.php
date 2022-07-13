@@ -919,12 +919,7 @@ function add_entry() {
             $loc = explode( ":", str_replace( "'", "", $DetTB[ "location" ] ) . ":" );
             $lat = $loc[ 0 ]; //latitude
             $lng = $loc[ 1 ]; //longitude
-            $address = fetch_address( $lat, $lng );
-            if ( $address ) {
-                $DetTB[ "geoaddress" ] = $address;
-            } else {
-                $DetTB[ "geoaddress" ] = "NA";
-            }
+            $DetTB[ "geoaddress" ] = "NA";
             $apps = "'261'";
             $vst = "0";
             $sqlsp = "{call  ";
@@ -1273,17 +1268,5 @@ function Entry_Count() {
     $temp = performQuery( $query );
     $results[] = $temp[ 0 ];
     return $results;
-}
-
-function fetch_address( $lat, $lng ) {
-    $url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' . trim( $lat ) . ',' . trim( $lng ) . '&sensor=false';
-    $json = @file_get_contents( $url );
-    $data = json_decode( $json );
-    $status = $data->status;
-    if ( $status == "OK" ) {
-        return $data->results[ 0 ]->formatted_address;
-    } else {
-        return false;
-    }
 }
 ?>
