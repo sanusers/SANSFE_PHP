@@ -184,7 +184,7 @@ function mastersync() {
     case "vwactivity_csh_detail":
       $or = ( isset( $data[ 'or' ] ) && $data[ 'or' ] == 0 ) ? null : $data[ 'or' ];
       $where = isset( $data[ 'where' ] ) ? json_decode( $data[ 'where' ] ) : null;
-      $query = "select * from vwActivity_CSH_Detail where Trans_Detail_Info_Type=" . $or . " and " . join( " or ", $where ) . " order by vstTime";
+      $query = "select Trans_SlNo,Trans_Detail_Slno,sf_code,Trans_Detail_Info_Type,Trans_Detail_Info_Code,POB,Worked_with_Code,Worked_with_Name,SDP,Activity_Remarks,Division_Code,Visit_Type,Trans_Detail_Name,SDP_Name,Additional_Prod_Code,Additional_Prod_Dtls,Additional_Gift_Code,Call_Fdback,Additional_Gift_Dtl,Session,vstTime,ModTime,Rx,lati,long,Entry_Mode,DataSF,GeoAddrs,ATime,DCRDt from vwActivity_CSH_Detail where Trans_Detail_Info_Type=" . $or . " and " . join( " or ", $where ) . " order by vstTime";
       outputJSON( performQuery( $query ) );
       break;
     default:

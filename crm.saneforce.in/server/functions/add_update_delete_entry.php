@@ -50,7 +50,7 @@ function add_entry() {
             performQuery( $query );
 
             if ( str_replace( "'", "", $vals[ "FWFlg" ] ) != "F" ) {
-                $query = "SELECT * FROM vwActivity_Report where SF_Code='" . $sfCode . "'  and cast(activity_date as datetime)=cast('$today' as datetime)";
+                $query = "SELECT FWFlg, Confirmed FROM vwActivity_Report where SF_Code='" . $sfCode . "'  and cast(activity_date as datetime)=cast('$today' as datetime)";
                 $result1 = performQuery( $query );
                 if ( count( $result1 ) > 0 ) {
                     if ( $result1[ 0 ][ 'FWFlg' ] == 'L' && $result1[ 0 ][ 'Confirmed' ] != 2 && $result1[ 0 ][ 'Confirmed' ] != 3 ) {
@@ -74,6 +74,7 @@ function add_entry() {
                     delete_AR_entry( $sfCode, $vals[ "wtype" ], $today );
                     $ARCd = "0";
                     $sql = "{call  svDCRMain_App(?,?," . $vals[ "wtype" ] . ",'" . str_replace( "'", "", $vals[ "cluster" ] ) . "',?,'" . str_replace( "'", "", $vals[ "remarks" ] ) . "',?)}";
+
                     $params = array( array( $sfCode, SQLSRV_PARAM_IN ),
                         array( $today, SQLSRV_PARAM_IN ),
                         array( $Owndiv, SQLSRV_PARAM_IN ),
@@ -359,7 +360,7 @@ function add_entry() {
             $sql = "insert into Trans_FM_Expense_Detail(DCR_Date,Expense_wtype_Code,Expense_wtype_Name,Place_of_Work,Expense_Place_No,Division_Code,Expense_Allowance,Expense_Distance,Expense_Fare,Created_Date,LastUpdt_Date,Sf_Name,Sf_Code,Expense_Total) select '$dcrdate',$wcode,$wname,$place,$placeno,$divisionCode[0],$expenseAllowance,$expenseDistance,$expenseFare,'$date','$date',$sfName,'$sfCode',$total";
             performQuery( $sql );
 
-            $sql = "SELECT * FROM Trans_Expense_Amount_Detail where Month=MONTH('$date') and year=YEAR('$date') and Sf_Code='$sfCode'";
+            $sql = "SELECT sl_no, Total_Allowance, Total_Distance, Total_Fare, Total_Expense, Total_Additional_Amt FROM Trans_Expense_Amount_Detail where Month=MONTH('$date') and year=YEAR('$date') and Sf_Code='$sfCode'";
             $tRw = performQuery( $sql );
             if ( empty( $tRw ) ) {
                 $additionalAmount = $additionalTot + $total;
@@ -638,7 +639,7 @@ function add_entry() {
                 $today = $vals[ "dcr_activity_date" ];
             }
             $vals[ "Worktype_code" ] = "'" . str_replace( "'", "", $vals[ "Worktype_code" ] ) . "'";
-            $sql = "SELECT * FROM vwActivity_Report where SF_Code='" . $sfCode . "' and lower(Work_Type) <>lower(" . $vals[ "Worktype_code" ] . ")  and cast(activity_date as datetime)=cast('$today' as datetime)";
+            $sql = "SELECT FWFlg, Confirmed FROM vwActivity_Report where SF_Code='" . $sfCode . "' and lower(Work_Type) <>lower(" . $vals[ "Worktype_code" ] . ")  and cast(activity_date as datetime)=cast('$today' as datetime)";
             $result1 = performQuery( $sql );
 
             $sql = "SELECT * FROM dcrmain_temp where SF_Code='" . $sfCode . "' and  cast(activity_date as datetime)=cast('$today' as datetime) and confirmed=2 and fieldwork_indicator='L'";
