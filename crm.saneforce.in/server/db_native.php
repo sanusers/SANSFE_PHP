@@ -727,16 +727,16 @@ switch ( strtolower( $value[ 0 ] ) ) {
         }
         outputJSON( $result );
         break;
-    case "getDoctorNextVisit":
+    case "get/DocNxtVisit":
         $sfCode = $_GET[ 'sfCode' ];
         $month = $_GET[ 'month' ];
         $year = $_GET[ 'year' ];
-        $query = "select * from vwDoctorNextVisit where sfcode='$sfCode' and month(date)=$month and year(date)=$year";
+        $query = "select [date],PrevVisit,Cluster,Trans_Detail_Name,color,Trans_Detail_Slno,sfcode from vwDoctorNextVisit where sfcode='$sfCode' and month(date)=$month and year(date)=$year";
         outputJSON( performQuery( $query ) );
         break;
     case "vwLeaveStatus":
         $sfCode = $_GET[ 'sfCode' ];
-        $query = "select * from vwLeaveEntitle where Sf_Code='$sfCode'";
+        $query = "select id,sf_code,Leave_Type_Code,No_Of_Days,Leave_Taken_Days,Leave_Balance_Days,Trans_Year from vwLeaveEntitle where Sf_Code='$sfCode'";
         outputJSON( performQuery( $query ) );
         break;
     case "LeaveHistory":
@@ -767,23 +767,7 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $div = $_GET[ 'divisionCode' ];
         $divs = explode( ",", $div . "," );
         $Owndiv = ( string )$divs[ 0 ];
-        $query = "select * from File_info where div_code='$Owndiv'";
-        outputJSON( performQuery( $query ) );
-        break;
-    case "media_inbox":
-        $sfCode = $_GET[ 'sfCode' ];
-        $div = $_GET[ 'divisionCode' ];
-        $divs = explode( ",", $div . "," );
-        $Owndiv = ( string )$divs[ 0 ];
-        $query = "select *,(case when media_sf_from='$sfCode' then 1 else 0 end) mode from Mas_MediaFiles_Info where (media_sf_from='$sfCode' or media_sf_to='$sfCode') and active_flag=0";
-        outputJSON( performQuery( $query ) );
-        break;
-    case "vwMedUpdateUpload":
-        $sfCode = $_GET[ 'sfCode' ];
-        $div = $_GET[ 'divisionCode' ];
-        $divs = explode( ",", $div . "," );
-        $Owndiv = ( string )$divs[ 0 ];
-        $query = "select * from vwMedUpdateUpload where Division_Code='$Owndiv'";
+        $query = "select ID,[FileName],FileSubject,Div_Code,Update_dtm,ContentType,[Data],Designation_Code,Designation_Short_Name from File_info div_code='$Owndiv'";
         outputJSON( performQuery( $query ) );
         break;
     case "vaccancyList":
@@ -793,7 +777,7 @@ switch ( strtolower( $value[ 0 ] ) ) {
         break;
     case "vwLeave":
         $sfCode = $_GET[ 'sfCode' ];
-        $query = "select * from vwLeave vl INNER JOIN vwLeaveType vw ON vl.Leave_Type = vw.leave_code where Reporting_To_SF='$sfCode'";
+        $query = "select vl.Sf_Code, vl.Leave_Id, vl.Leave_Type, vl.Reason,	vl.[Address], vl.FieldForceName, vl.Reporting_To_SF, vl.Designation, vl.HQ,	vl.EmpCode,	vl.From_Date, vl.To_Date,	vl.LeaveDays, vw.Leave_Code,	vw.Leave_SName,	vw.Leave_Name, vw.Division_Code from vwLeave vl INNER JOIN vwLeaveType vw ON vl.Leave_Type = vw.leave_code where Reporting_To_SF='$sfCode'";
         outputJSON( performQuery( $query ) );
         break;
     case "vwCheckLeave":
@@ -803,7 +787,7 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $leaveDays = performQuery( $sql );
         $currentDate = date_create( $date );
         $disableDates = array();
-        $sql = "SELECT * FROM vwActivity_Report where SF_Code='" . $sfCode . "' and cast(activity_date as datetime)=cast('$date' as datetime)";
+        $sql = "SELECT Trans_SlNo, Sf_Code, Work_Type, Plan_No, Plan_Name, WorkType_Name FROM vwActivity_Report where SF_Code='" . $sfCode . "' and cast(activity_date as datetime)=cast('$date' as datetime)";
         $dcrEntry = performQuery( $sql );
         if ( count( $dcrEntry ) > 0 )
             array_push( $disableDates );
@@ -1105,7 +1089,7 @@ switch ( strtolower( $value[ 0 ] ) ) {
             $Pri_Value = ( string )$JSONArray[ $i ][ 'Pri_Value' ];
             $Sec_Value = ( string )$JSONArray[ $i ][ 'Sec_Value' ];
 
-            $sql = "select * from Trans_Pri_Sec_Sale where Trans_Month='$Trans_Month' and Trans_Year='$Trans_Year' and sf_code='$SFCode' and Division_Code='$DivCode' and Stockist_Code='$Stockist_Code'";
+            $sql = "	1a from Trans_Pri_Sec_Sale where Trans_Month='$Trans_Month' and Trans_Year='$Trans_Year' and sf_code='$SFCode' and Division_Code='$DivCode' and Stockist_Code='$Stockist_Code'";
             $data1 = performQuery( $sql );
             if ( count( $data1 ) > 0 ) {
                 $query1 = "Update Trans_Pri_Sec_Sale set Pri_Value='$Pri_Value',Sec_Value='$Sec_Value',Updated_Date=getdate() where Trans_Month='$Trans_Month' and Trans_Year='$Trans_Year' and sf_code='$SFCode' and Division_Code='$DivCode' and Stockist_Code='$Stockist_Code'";
@@ -1150,38 +1134,13 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $divCode = $_GET[ 'divisionCode' ];
         $sfCode = $_GET[ 'sfCode' ];
         $monthexp = $_GET[ 'monthexp' ];
-        $query1 = "select * FROM Trans_Expense_Head_App  where division_code ='" . $divCode . "' and SF_Code='" . $sfCode . "' and Expense_Month='" . $monthexp . "'";
+        $query1 = "select Sl_No FROM Trans_Expense_Head_App where division_code ='" . $divCode . "' and SF_Code='" . $sfCode . "' and Expense_Month='" . $monthexp . "'";
         $result1 = performQuery( $query1 );
         $Sl_No = $result1[ 0 ][ 'Sl_No' ];
-        $query2 = "select * FROM Trans_Expense_Detail_App  where Sl_No ='" . $Sl_No . "'";
+        $query2 = "select  Expense_Date, Expense_Day, Expense_wtype, Place_of_Work, Expense_All_Type, Expense_Allowance, Expense_Distance, Expense_Fare, Expense_Total FROM Trans_Expense_Detail_App  where Sl_No ='" . $Sl_No . "'";
         $result2 = performQuery( $query2 );
         if ( $result2 ) {
             outputJSON( $result2 );
-        } else {
-            outputJSON( [] );
-        }
-        break;
-    case "get/camp_apprlist":
-        $divcode = $_GET[ 'Division_Code' ];
-        $Sf_code = $_GET[ 'Sf_code' ];
-        $Camp_Type = $_GET[ 'Camp_Type' ];
-        $Camp_Code = $_GET[ 'Camp_Code' ];
-        $query = "Select * from Trans_opd_camp_approval where Division_Code='" . $divcode . "' and Camp_Code='" . $Camp_Code . "' and Sf_code='" . $Sf_code . "' and Camp_Type='" . $Camp_Type . "'";
-        $result = performQuery( $query );
-        if ( $result ) {
-            outputJSON( $result );
-        } else {
-            outputJSON( [] );
-        }
-        break;
-    case "get/manager_camplist":
-        $divcode = $_GET[ 'Division_Code' ];
-        $Sf_code = $_GET[ 'Sf_code' ];
-        $Camp_Status = $_GET[ 'Camp_Status' ];
-        $query = "Select * from Trans_opd_camp_approval where Division_Code='$divcode' and Sf_code='$Sf_code' and Camp_Status='$Camp_Status'";
-        $result = performQuery( $query );
-        if ( $result ) {
-            outputJSON( $result );
         } else {
             outputJSON( [] );
         }
@@ -1191,17 +1150,6 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $Div = $_GET[ 'Div' ];
         $sql = "exec getCamp_opd_approvelist '" . $SF . "','" . $Div . "'";
         $result = performQuery( $sql );
-        if ( $result ) {
-            outputJSON( $result );
-        } else {
-            outputJSON( [] );
-        }
-        break;
-    case "get/Camp_taggedlist":
-        $divisionCode = $_GET[ 'divisionCode' ];
-        $OPD_Code = $_GET[ 'OPD_Code' ];
-        $query = "Select * from Map_OPDCamp_Drs_Details where OPD_Code='" . $OPD_Code . "' and Division_Code='" . $divisionCode . "'";
-        $result = performQuery( $query );
         if ( $result ) {
             outputJSON( $result );
         } else {
@@ -1237,7 +1185,7 @@ switch ( strtolower( $value[ 0 ] ) ) {
     case "get/expenselist":
         $divCode = $_GET[ 'divisionCode' ];
         $param_type = $_GET[ 'param_type' ];
-        $query = "select * FROM fixed_variable_expense_setup  where division_code ='" . $divCode . "' and param_type !='F'";
+        $query = "select Expense_Parameter_Name, Param_type, Fixed_Amount, Fixed_Amount1 FROM fixed_variable_expense_setup  where division_code ='" . $divCode . "' and param_type !='F'";
         $result = performQuery( $query );
         if ( $result ) {
             outputJSON( $result );
@@ -1312,10 +1260,62 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $amc = ( isset( $data[ 'amc' ] ) && strlen( $data[ 'amc' ] ) == 0 ) ? null : $data[ 'amc' ];
         $result = delete_entry( $arc, $amc );
         break;
-	case "vwChkTransApproval":
-        $sfCode = $_GET['sfCode'];
-        $query = "select * from vwChkTransApproval where Reporting_To_SF='$sfCode'";
-        outputJSON(performQuery($query));
+    case "vwChkTransApproval":
+        $sfCode = $_GET[ 'sfCode' ];
+        $query = "select Worked_With_SF_Name, Tour_Date, Worktype_Name_B, Tour_Schedule1 from vwChkTransApproval where Reporting_To_SF='$sfCode'";
+        outputJSON( performQuery( $query ) );
+        break;
+    case "get/camp_apprlist":
+        $divcode = $_GET[ 'Division_Code' ];
+        $Sf_code = $_GET[ 'Sf_code' ];
+        $Camp_Type = $_GET[ 'Camp_Type' ];
+        $Camp_Code = $_GET[ 'Camp_Code' ];
+        $query = "Select * from Trans_opd_camp_approval where Division_Code='" . $divcode . "' and Camp_Code='" . $Camp_Code . "' and Sf_code='" . $Sf_code . "' and Camp_Type='" . $Camp_Type . "'";
+        $result = performQuery( $query );
+        if ( $result ) {
+            outputJSON( $result );
+        } else {
+            outputJSON( [] );
+        }
+        break;
+    case "get/manager_camplist":
+        $divcode = $_GET[ 'Division_Code' ];
+        $Sf_code = $_GET[ 'Sf_code' ];
+        $Camp_Status = $_GET[ 'Camp_Status' ];
+        $query = "Select * from Trans_opd_camp_approval where Division_Code='$divcode' and Sf_code='$Sf_code' and Camp_Status='$Camp_Status'";
+        $result = performQuery( $query );
+        if ( $result ) {
+            outputJSON( $result );
+        } else {
+            outputJSON( [] );
+        }
+        break;
+    case "get/Camp_taggedlist":
+        $divisionCode = $_GET[ 'divisionCode' ];
+        $OPD_Code = $_GET[ 'OPD_Code' ];
+        $query = "Select * from Map_OPDCamp_Drs_Details where OPD_Code='" . $OPD_Code . "' and Division_Code='" . $divisionCode . "'";
+        $result = performQuery( $query );
+        if ( $result ) {
+            outputJSON( $result );
+        } else {
+            outputJSON( [] );
+        }
+        break;
+    case "vwMedUpdateUpload":
+        $sfCode = $_GET[ 'sfCode' ];
+        $div = $_GET[ 'divisionCode' ];
+        $divs = explode( ",", $div . "," );
+        $Owndiv = ( string )$divs[ 0 ];
+        $query = "select * from vwMedUpdateUpload where Division_Code='$Owndiv'";
+        outputJSON( performQuery( $query ) );
+        break;
+    case "media_inbox":
+        $sfCode = $_GET[ 'sfCode' ];
+        $div = $_GET[ 'divisionCode' ];
+        $divs = explode( ",", $div . "," );
+        $Owndiv = ( string )$divs[ 0 ];
+        $query = "select *,(case when media_sf_from='$sfCode' then 1 else 0 end) mode from Mas_MediaFiles_Info where (media_sf_from='$sfCode' or media_sf_to='$sfCode') and active_flag=0";
+        outputJSON( performQuery( $query ) );
         break;
 }
 ?>
