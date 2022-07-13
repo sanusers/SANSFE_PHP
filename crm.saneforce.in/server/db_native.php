@@ -1301,21 +1301,5 @@ switch ( strtolower( $value[ 0 ] ) ) {
             outputJSON( [] );
         }
         break;
-    case "vwMedUpdateUpload":
-        $sfCode = $_GET[ 'sfCode' ];
-        $div = $_GET[ 'divisionCode' ];
-        $divs = explode( ",", $div . "," );
-        $Owndiv = ( string )$divs[ 0 ];
-        $query = "select * from vwMedUpdateUpload where Division_Code='$Owndiv'";
-        outputJSON( performQuery( $query ) );
-        break;
-    case "media_inbox":
-        $sfCode = $_GET[ 'sfCode' ];
-        $div = $_GET[ 'divisionCode' ];
-        $divs = explode( ",", $div . "," );
-        $Owndiv = ( string )$divs[ 0 ];
-        $query = "select *,(case when media_sf_from='$sfCode' then 1 else 0 end) mode from Mas_MediaFiles_Info where (media_sf_from='$sfCode' or media_sf_to='$sfCode') and active_flag=0";
-        outputJSON( performQuery( $query ) );
-        break;
 }
 ?>
