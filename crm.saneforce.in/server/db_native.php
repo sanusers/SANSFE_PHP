@@ -1014,9 +1014,9 @@ switch ( strtolower( $value[ 0 ] ) ) {
             $Pri_Value = ( string )$JSONArray[ $i ][ 'Pri_Value' ];
             $Sec_Value = ( string )$JSONArray[ $i ][ 'Sec_Value' ];
 
-            $sql = "	1a from Trans_Pri_Sec_Sale where Trans_Month='$Trans_Month' and Trans_Year='$Trans_Year' and sf_code='$SFCode' and Division_Code='$DivCode' and Stockist_Code='$Stockist_Code'";
+            $sql = "select count(sf_code) as mRow from Trans_Pri_Sec_Sale where Trans_Month='$Trans_Month' and Trans_Year='$Trans_Year' and sf_code='$SFCode' and Division_Code='$DivCode' and Stockist_Code='$Stockist_Code'";
             $data1 = performQuery( $sql );
-            if ( count( $data1 ) > 0 ) {
+            if ( $data1[0]['mRow'] > 0 ) {
                 $query1 = "Update Trans_Pri_Sec_Sale set Pri_Value='$Pri_Value',Sec_Value='$Sec_Value',Updated_Date=getdate() where Trans_Month='$Trans_Month' and Trans_Year='$Trans_Year' and sf_code='$SFCode' and Division_Code='$DivCode' and Stockist_Code='$Stockist_Code'";
                 performQuery( $query1 );
             } else {

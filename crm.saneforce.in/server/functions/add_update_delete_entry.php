@@ -1062,26 +1062,18 @@ function SaveDCRActivity( $Dact ) {
             }
 
             if ( $type_val == '1' ) {
-                $query = "exec svDCRLstDet_App '" . $det_no . "',0,'" . $sf . "',1,'" . $cust_code . "','" . $value[ 'cusname' ] . "','" . $dt . "',0,'','','','','','','','','','','','','" . $div . "',0,'" . $dt . "','" . $value[ 'lat' ] . "','" . $value[ 'lng' ] . "','" . $value[ 'DataSF' ] . "','NA','Apps'";
-                performQuery( $query );
                 $query = "select Trans_Detail_Slno from vwActivity_MSL_Details where Trans_SlNo='" . $det_no . "' and Trans_Detail_Info_Code='" . $cust_code . "'";
                 $arr = performQuery( $query );
                 $main_no = $arr[ 0 ][ "Trans_Detail_Slno" ];
             }
 
             if ( $type_val == '2' || $type_val == '3' ) {
-                $query = "exec svDCRCSHDet_App '" . $det_no . "',0,'" . $sf . "','" . $type_val . "','" . $cust_code . "','" . $value[ 'cusname' ] . "','" . $dt . "',0,'','','','','','','','" . $div . "',0,'" . $dt . "','" . $value[ 'lat' ] . "','" . $value[ 'lng' ] . "','" . $value[ 'DataSF' ] . "','NA','Apps'";
-                $result[ "CQry" ] = $query;
-                performQuery( $query );
-                $query = "select Trans_Detail_Slno from vwActivity_CSH_Detail where Trans_SlNo='" . $det_no . "' and Trans_Detail_Info_Code='" . $cust_code . "'";
+                $query = "select Trans_Detail_Slno from vwActivity_CSH_Detail where Trans_SlNo='" . $det_no . "' and Trans_Detail_Info_Code='" . $cust_code . "' and Trans_Detail_Info_Type = '".$type_val."'";
                 $arr = performQuery( $query );
                 $main_no = $arr[ 0 ][ "Trans_Detail_Slno" ];
             }
 
             if ( $type_val == '4' ) {
-                $query = "exec svDCRUnlstDet_App '" . $det_no . "',0,'" . $sf . "','" . $type_val . "','" . $cust_code . "','" . $value[ 'cusname' ] . "','" . $dt . "',0,'','','','','','','','','','','','','" . $div . "',0,'" . $dt . "','" . $value[ 'lat' ] . "','" . $value[ 'lng' ] . "','" . $value[ 'DataSF' ] . "','NA','Apps'";
-                $result[ "NQry" ] = $query;
-                performQuery( $query );
                 $query = "select Trans_Detail_Slno from vwActivity_Unlst_Detail where Trans_SlNo='" . $det_no . "' and Trans_Detail_Info_Code='" . $cust_code . "'";
                 $arr = performQuery( $query );
                 $main_no = $arr[ 0 ][ "Trans_Detail_Slno" ];
