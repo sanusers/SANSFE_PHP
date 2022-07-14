@@ -576,9 +576,6 @@ switch ( strtolower( $value[ 0 ] ) ) {
     case "save/tpdaynew":
         savetourplan( 0 );
         break;
-    case "save/tourplannew":
-        savetourplan( 1 );
-        break;
     case "save/tourplan_fullmonth":
         $data = json_decode( $_POST[ 'data' ], true );
         $TPDatas = $data[ 0 ][ 'TPDatas' ];
