@@ -213,33 +213,6 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $query = "select Doc_Cat_Code,Doc_Cat_ShortName,Doc_QuaCode, visit_hours,visit_days,REPLACE(visit_days,'/',',') visit_days1,REPLACE(visit_hours,'/',',')visit_hours1,ListedDr_Address3,Doc_Qua_Name,Doc_Special_Code, Doc_Spec_ShortName,Hospital_Address,convert(nvarchar(MAX), ListedDr_DOB, 23) ListedDr_DOB,convert(nvarchar(MAX), ListedDr_DOW, 23) ListedDr_DOW, ListedDr_Hospital,ListedDr_Sex,ListedDr_RegNo,Visiting_Card,Dr_Potential, Dr_Contribution from mas_listeddr where ListedDrCode='" . $MSL . "'";
         outputJSON( performQuery( $query ) );
         break;
-    case "save/newdr":
-        $data = json_decode( $_POST[ 'data' ], true );
-        $SF = ( string )$data[ 'SF' ];
-        $DivCodes = ( string )$data[ 'DivCode' ];
-        $DivCode = explode( ",", $DivCodes . "," );
-        $DrName = ( string )$data[ 'DrName' ];
-        $DrQCd = ( string )$data[ "DrQCd" ];
-        $DrQNm = ( string )$data[ "DrQNm" ];
-        $DrClsCd = ( string )$data[ "DrClsCd" ];
-        $DrClsNm = ( string )$data[ "DrClsNm" ];
-        $DrCatCd = ( string )$data[ "DrCatCd" ];
-        $CatNm = ( string )$data[ "DrCatNm" ];
-        $DrSpcCd = ( string )$data[ "DrSpcCd" ];
-        $DrSpcNm = ( string )$data[ "DrSpcNm" ];
-        $DrAddr = ( string )$data[ "DrAddr" ];
-        $DrTerCd = ( string )$data[ "DrTerCd" ];
-        $DrTerNm = ( string )$data[ "DrTerNm" ];
-        $DrPincd = ( string )$data[ "DrPincd" ];
-        $DrPhone = ( string )$data[ "DrPhone" ];
-        $DrMob = ( string )$data[ "DrMob" ];
-        $Uid = ( string )$data[ "Uid" ];
-        $sql = "exec svNewCustomer_App 0,'','" . $DrName . "','" . $DrAddr . "','" . $DrTerCd . "','" . $DrTerNm . "','" . $DrCatCd . "','" . $CatNm . "','" . $DrSpcCd . "','" . $DrSpcNm . "','" . $DrClsCd . "','" . $DrClsNm . "','" . $DrQCd . "','" . $DrQNm . "','U','" . $SF . "','','','" . $DrPincd . "','" . $DrPhone . "','" . $DrMob . "','" . $Uid . "'";
-        $output = performQuery( $sql );
-        $result[ "Qry" ] = $output[ 0 ][ 'Msg' ];
-        $result[ "success" ] = true;
-        outputJSON( $result );
-        break;
     case "createMail":
         $sf = $_GET[ 'sfCode' ];
         $div = $_GET[ 'divisionCode' ];
@@ -506,33 +479,6 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $month = date( 'n', strtotime( $Rptdt ) );
         $sql = "EXEC Dashboard_Native_App '" . $div . "','" . $sfCode . "','9','2021','" . $Rptdt . "'";
         outputJSON( performQuery( $sql ) );
-        break;
-    case "save/newdr":
-        $data = json_decode( $_POST[ 'data' ], true );
-        $SF = ( string )$data[ 'SF' ];
-        $DivCodes = ( string )$data[ 'DivCode' ];
-        $DivCode = explode( ",", $DivCodes . "," );
-        $DrName = ( string )$data[ 'DrName' ];
-        $DrQCd = ( string )$data[ "DrQCd" ];
-        $DrQNm = ( string )$data[ "DrQNm" ];
-        $DrClsCd = ( string )$data[ "DrClsCd" ];
-        $DrClsNm = ( string )$data[ "DrClsNm" ];
-        $DrCatCd = ( string )$data[ "DrCatCd" ];
-        $CatNm = ( string )$data[ "DrCatNm" ];
-        $DrSpcCd = ( string )$data[ "DrSpcCd" ];
-        $DrSpcNm = ( string )$data[ "DrSpcNm" ];
-        $DrAddr = ( string )$data[ "DrAddr" ];
-        $DrTerCd = ( string )$data[ "DrTerCd" ];
-        $DrTerNm = ( string )$data[ "DrTerNm" ];
-        $DrPincd = ( string )$data[ "DrPincd" ];
-        $DrPhone = ( string )$data[ "DrPhone" ];
-        $DrMob = ( string )$data[ "DrMob" ];
-        $Uid = ( string )$data[ "Uid" ];
-        $query = "exec svNewCustomer_App 0,'','" . $DrName . "','" . $DrAddr . "','" . $DrTerCd . "','" . $DrTerNm . "','" . $DrCatCd . "','" . $CatNm . "','" . $DrSpcCd . "','" . $DrSpcNm . "','" . $DrClsCd . "','" . $DrClsNm . "','" . $DrQCd . "','" . $DrQNm . "','U','" . $SF . "','','','" . $DrPincd . "','" . $DrPhone . "','" . $DrMob . "','" . $Uid . "'";
-        $output = performQuery( $query );
-        $result[ "Qry" ] = $output[ 0 ][ 'Msg' ];
-        $result[ "success" ] = true;
-        outputJSON( $result );
         break;
     case "get/DayCheckInRpt":
         $sfCode = $_GET[ 'sfCode' ];
@@ -948,27 +894,6 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $todt = date( 'Y-m-d 00:00:00', $todate );
         $query = "exec iOS_getLvlValidate '" . $sf_code . "','" . $from . "','" . $todt . "','" . $lv_type . "' ";
         outputJSON( performQuery( $query ) );
-        break;
-    case "get/setup":
-        $rqSF = $_GET[ 'rSF' ];
-        $sql = "EXEC getAPPSetups '" . $rqSF . "'";
-        outputJSON( performQuery( $sql ) );
-        break;
-    case "tpview":
-        $data = json_decode( $_POST[ 'data' ], true );
-        $sfCode = ( string )$data[ 'sfCode' ];
-        $t = strtotime( str_replace( "Z", "", str_replace( "T", " ", $data[ 'mnthYr' ] ) ) );
-        $TpDt = date( 'Y-m-d 00:00:00', $t );
-        $query = "SELECT convert(varchar,Tour_Date,103) [date],Worktype_Name_B wtype,replace(isnull(Tour_Schedule1,''),'0','') towns,replace(isnull(Tour_Schedule1,''),'0','') PlnNo,Worktype_Name_B1 wtype2,replace(isnull(Tour_Schedule2,''),'0','') towns2,replace(isnull(Tour_Schedule2,''),'0','') PlnNo2,Worktype_Name_B2 wtype3,replace(isnull(Tour_Schedule3,''),'0','') towns3,replace(isnull(Tour_Schedule2,''),'0','') PlnNo3,SF_Code sf_code from Trans_TP T where sf_code='$sfCode' and Tour_Month=month('$TpDt') and Tour_year=year('$TpDt') order by Tour_Date";
-        outputJSON( performQuery( $query ) );
-        break;
-    case "tpviewdt":
-        $data = json_decode( $_POST[ 'data' ], true );
-        $sfCode = ( string )$data[ 'sfCode' ];
-        $t = strtotime( str_replace( "Z", "", str_replace( "T", " ", $data[ 'tpDate' ] ) ) );
-        $TpDt = date( 'Y-m-d 00:00:00', $t );
-        $sql = "EXEC spTPViewDtws '$sfCode','$TpDt'";
-        outputJSON( performQuery( $sql ) );
         break;
     case "save/geotag":
         $data = json_decode( $_POST[ 'data' ], true );
