@@ -1070,43 +1070,6 @@ switch ( strtolower( $value[ 0 ] ) ) {
             outputJSON( [] );
         }
         break;
-    case "get_campopdapprlist":
-        $SF = $_GET[ 'SF' ];
-        $Div = $_GET[ 'Div' ];
-        $sql = "exec getCamp_opd_approvelist '" . $SF . "','" . $Div . "'";
-        $result = performQuery( $sql );
-        if ( $result ) {
-            outputJSON( $result );
-        } else {
-            outputJSON( [] );
-        }
-        break;
-    case "get/campdetails":
-        $divCode = $_GET[ 'divisionCode' ];
-        $sfCode = $_GET[ 'sfCode' ];
-        $Campaign_Lock_flag = $_GET[ 'Campaign_Lock_flag' ];
-        $dateTime = date( 'Y-m-d 00:00:000' );
-        $sql = "EXEC getCamp_approvelist '$sfCode','$divCode','$dateTime','$Campaign_Lock_flag'";
-        $result = performQuery( $sql );
-        if ( $result ) {
-            outputJSON( $result );
-        } else {
-            outputJSON( [] );
-        }
-        break;
-    case "get/campaigndetails":
-        $divCode = $_GET[ 'divisionCode' ];
-        $sfCode = $_GET[ 'sfCode' ];
-        $Campaign_Lock_flag = $_GET[ 'Campaign_Lock_flag' ];
-        $dateTime = date( 'Y-m-d 00:00:000' );
-        $sql = "EXEC getCampaign_approvelist '$sfCode','$divCode','$dateTime','$Campaign_Lock_flag'";
-        $result = performQuery( $sql );
-        if ( $result ) {
-            outputJSON( $result );
-        } else {
-            outputJSON( [] );
-        }
-        break;
     case "get/expenselist":
         $divCode = $_GET[ 'divisionCode' ];
         $param_type = $_GET[ 'param_type' ];
@@ -1143,32 +1106,6 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $sf = $_GET[ 'sf_code' ];
         move_uploaded_file( $_FILES[ "imgfile" ][ "tmp_name" ], "../Profile_Imgs/" . $sf . "_" . $_FILES[ "imgfile" ][ "name" ] );
         break;
-    case "fileAttachment_record":
-        $sf = $_GET[ 'sfCode' ];
-        $div = $_GET[ 'divisionCode' ];
-        $contentype = $_GET[ 'contenttype' ];
-        $divs = explode( ",", $div . "," );
-        $Owndiv = ( string )$divs[ 0 ];
-        $file = $_FILES[ 'mediafile' ][ 'name' ];
-        $info = pathinfo( $file );
-        $file_name = basename( $file, '.' . $info[ 'extension' ] );
-        $file_name = str_replace( "%20", "_", $file_name );
-        $ext = $info[ 'extension' ];
-        $fileName = $file_name . "_" . $sf . "_" . date( 'd_m_Y' ) . "." . $ext;
-        $file_src = '../MasterFiles/media_recorder/' . $fileName;
-        $result = array();
-        if ( move_uploaded_file( $_FILES[ 'mediafile' ][ 'tmp_name' ], $file_src ) ) {
-            $query = "select reporting_to_sf from mas_salesforce where sf_code='" . $sf . "'";
-            $rep = performQuery( $query );
-            $reprtTo = $rep[ 0 ][ 'reporting_to_sf' ];
-            $query = "insert into Mas_MediaFiles_Info select '" . $sf . "','" . $reprtTo . "','" . $contentype . "','" . $fileName . "',getdate(),'" . $Owndiv . "',0";
-            performQuery( $query );
-            $result[ 'success' ] = true;
-        } else {
-            $result[ 'success' ] = $_FILES[ 'mediafile' ][ 'error' ];
-        }
-        outputJSON( $result );
-        break;
     case "fileAttachment_mail":
         $sf = $_GET[ 'sf_code' ];
         $file = $_FILES[ 'imgfile' ][ 'name' ];
@@ -1184,11 +1121,6 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $arc = ( isset( $data[ 'arc' ] ) && strlen( $data[ 'arc' ] ) == 0 ) ? null : $data[ 'arc' ];
         $amc = ( isset( $data[ 'amc' ] ) && strlen( $data[ 'amc' ] ) == 0 ) ? null : $data[ 'amc' ];
         $result = delete_entry( $arc, $amc );
-        break;
-    case "vwChkTransApproval":
-        $sfCode = $_GET[ 'sfCode' ];
-        $query = "select Worked_With_SF_Name, Tour_Date, Worktype_Name_B, Tour_Schedule1 from vwChkTransApproval where Reporting_To_SF='$sfCode'";
-        outputJSON( performQuery( $query ) );
         break;
 }
 ?>

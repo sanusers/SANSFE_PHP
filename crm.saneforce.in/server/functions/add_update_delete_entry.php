@@ -505,9 +505,6 @@ function add_entry() {
             $sql = "SELECT isNull(max(Leave_Id),0)+1 as RwID FROM Mas_Leave_Form";
             $tRw = performQuery( $sql );
             $pk = ( int )$tRw[ 0 ][ 'RwID' ];
-            if ( $vals[ 'Leave_Type' ] == '' || $vals[ 'Leave_Type' ] == null ) {
-                die;
-            }
             $query = "exec iOS_svLeaveApp '" . $sfCode . "','" . $vals[ 'From_Date' ] . "','" . $vals[ 'To_Date' ] . "','" . $vals[ 'No_of_Days' ] . "','" . $vals[ 'Leave_Type' ] . "','" . $vals[ 'Reason' ] . "','" . $vals[ 'address' ] . "'";
             performQuery( $query );
 
@@ -606,35 +603,6 @@ function add_entry() {
             }
             break;
         case "Activity_Report_APP":
-            $username = $vals[ 'username' ];
-            $AppDeviceRegId = $vals[ 'app_device_id' ];
-            $sql = "select * from mas_salesforce where UsrDfd_UserName='$username' and SF_Status=0";
-            $tr = performQuery( $sql );
-            if ( count( $tr ) == 0 && $AppDeviceRegId != null ) {
-                $respon = array();
-                $respon[ 'success' ] = false;
-                $respon[ 'type' ] = 3;
-                $respon[ 'msg' ] = "User Status Changed,. Kindly Login Again....";
-                return outputJSON( $respon );
-                die;
-            }
-            $sql = "select app_device_id from access_table where Sf_Code='$sfCode'";
-            $arr = performQuery( $sql );
-            if ( $arr[ 0 ][ 'app_device_id' ] == "" && $AppDeviceRegId != null ) {
-                $sql = "update access_table set app_device_id='$AppDeviceRegId' where Sf_Code='$sfCode'";
-                performQuery( $sql );
-            } else if ( $arr[ 0 ][ 'app_device_id' ] != $AppDeviceRegId && $AppDeviceRegId != null ) {
-                $sql = "select DeviceId_Need from Access_Master where division_code='$Owndiv'";
-                $tr = performQuery( $sql );
-                if ( $tr[ 0 ][ 'DeviceId_Need' ] == "2" ) {
-                    $respon = array();
-                    $respon[ 'success' ] = false;
-                    $respon[ 'type' ] = 3;
-                    $respon[ 'msg' ] = "Device Not Valid..";
-                    return outputJSON( $respon );
-                    die;
-                }
-            }
             if ( $vals[ "dcr_activity_date" ] != null && $vals[ "dcr_activity_date" ] != '' ) {
                 $today = $vals[ "dcr_activity_date" ];
             }
