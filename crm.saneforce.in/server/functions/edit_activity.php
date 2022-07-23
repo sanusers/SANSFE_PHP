@@ -1,11 +1,8 @@
 <?php
 
 function activity() {
-  $arc = $_GET[ 'arc' ];
-  $arc_dt = $_GET[ 'arc_dt' ];
-  $sfCode = $_GET[ 'sfCode' ];
   $result = array();
-  $query1 = "select Group_id from DCR_Detail_Activity  where sf_code='" . $sfCode . "' and Trans_Main_Sl_No='" . $arc . "' and Trans_Detail_Slno='" . $arc_dt . "' group by Group_id";
+  $query1 = "select Group_id from DCR_Detail_Activity  where sf_code='" . $_GET[ 'sfCode' ] . "' and Trans_Main_Sl_No='" . $_GET[ 'arc' ] . "' and Trans_Detail_Slno='" . $_GET[ 'arc_dt' ] . "' group by Group_id";
   $response1 = performQuery( $query1 );
   if ( count( $response1 ) > 0 ) {
     for ( $i = 0; $i < count( $response1 ); $i++ ) {

@@ -11,5 +11,5 @@ if ( $conn === false ) {
   echo "Unable to connect.</br>";
   die( print_r( sqlsrv_errors(), true ) );
 }
-global $conn;
+$GLOBALS[ 'Conn' ] = $conn;
 ?>
