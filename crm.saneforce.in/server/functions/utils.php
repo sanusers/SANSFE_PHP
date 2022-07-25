@@ -1,7 +1,7 @@
 <?php
-$conn = $GLOBALS[ 'Conn' ];
 
 function outputJSON( $array ) {
+    $conn = $GLOBALS[ 'conn' ];
     echo str_replace( ".000000", "", json_encode( $array ) );
     sqlsrv_close( $conn );
 }

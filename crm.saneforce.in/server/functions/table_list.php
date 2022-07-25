@@ -1,14 +1,19 @@
 <?php
 
 function MasterSync() {
-    $SF_Code = $_GET[ 'sfCode' ];
-    $RSF_Code = $_GET[ 'rSF' ];
-    $DivCode = $_GET[ 'divisionCode' ];
-    $Div_Code = explode( ",", $DivCode . "," );
-    $DivisionCode = ( string )$Div_Code[ 0 ];
     $data = $GLOBALS[ 'Data' ];
-
-    switch ( $GLOBALS[ 'TableName' ] ) {
+    if ( isset( $_GET[ 'sfCode' ] ) ) {
+        $SF_Code = $_GET[ 'sfCode' ];
+    }
+    if ( isset( $_GET[ 'rSF' ] ) ) {
+        $RSF_Code = $_GET[ 'rSF' ];
+    }
+    if ( isset( $_GET[ 'divisionCode' ] ) ) {
+        $Div_Code = isset( $_GET[ 'divisionCode' ] );
+        $DivCode = explode( ",", $Div_Code . "," );
+        $DivisionCode = ( string )$DivCode[ 0 ];
+    }
+    switch ( strtolower( $data[ 'tableName' ] ) ) {
         case "mas_worktype":
             $sql = "EXEC GetWorkTypes_App '" . $SF_Code . "'";
             outputJSON( performQuery( $sql ) );
@@ -18,8 +23,8 @@ function MasterSync() {
             outputJSON( performQuery( $sql ) );
             break;
         case "vwmydayplan":
-            //$sql = "EXEC getTodayTP_native_App '" . $RSF_Code . "', '" . $_GET[ 'cdate' ] . "'";
-            $sql = "EXEC SPR_TodayTP_APP '" . $RSF_Code . "', '" . $_GET[ 'cdate' ] . "'";
+            $sql = "EXEC getTodayTP_native_App '" . $RSF_Code . "', '" . $_GET[ 'cdate' ] . "'";
+            //$sql = "EXEC SPR_TodayTP_APP '" . $RSF_Code . "', '" . $_GET[ 'cdate' ] . "'";
             outputJSON( performQuery( $sql ) );
             break;
         case "category_master":
@@ -31,8 +36,8 @@ function MasterSync() {
             outputJSON( performQuery( $sql ) );
             break;
         case "vwleavetype":
-            $query = "select Leave_Code id, Leave_SName name, Leave_Name from vwLeaveType where Division_code='" . $DivisionCode . "'";
-            outputJSON( performQuery( $query ) );
+            include 'leave.php';
+            LeaveType( $DivisionCode );
             break;
         case "mas_superstockist":
             $query = "SELECT id, name, Division_Code FROM vwSuper_stockist_App WHERE Division_code='" . $DivisionCode . "'";
@@ -109,8 +114,8 @@ function MasterSync() {
             outputJSON( performQuery( $query ) );
             break;
         case "getmailsf":
-            $sql = "EXEC getFullHryList '" . $SF_Code . "'";
-            outputJSON( performQuery( $sql ) );
+            include 'mail.php';
+            GetMailSF( $SF_Code );
             break;
         default:
             $today = ( isset( $data[ 'today' ] ) && $data[ 'today' ] == 0 ) ? null : $data[ 'today' ];
