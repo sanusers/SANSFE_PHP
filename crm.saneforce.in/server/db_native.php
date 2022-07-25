@@ -17,21 +17,38 @@ $URL_BASE = "/";
 
 $axn = $_GET[ 'axn' ];
 $value = explode( ":", $axn );
-$SF_Code = $_GET[ 'sfCode' ];
-$RSF_Code = $_GET[ 'rSF' ];
-$DivCode = explode( ",", $_GET[ 'divisionCode' ] . "," );
-$DivisionCode = ( string )$DivCode[ 0 ];
+
+if ( isset( $_GET[ 'sfCode' ] ) ) {
+    $SF_Code = $_GET[ 'sfCode' ];
+}
+
+if ( isset( $_GET[ 'rSF' ] ) ) {
+    $RSF_Code = $_GET[ 'rSF' ];
+}
+
+if ( isset( $_GET[ 'divisionCode' ] ) ) {
+    $Div_Code = isset( $_GET[ 'divisionCode' ] );
+    $DivCode = explode( ",", $Div_Code . "," );
+    $DivisionCode = ( string )$DivCode[ 0 ];
+}
 
 $data = json_decode( $_POST[ 'data' ], true );
-$GLOBALS[ 'TableName' ] = strtolower( $data[ 'tableName' ] );
 $GLOBALS[ 'Data' ] = $data;
 
 switch ( strtolower( $value[ 0 ] ) ) {
     case "login":
-		$array = array();
+        $response_array = array();
         $sql = "EXEC SPR_LoginAPP '" . $data[ 'name' ] . "', '" . $data[ 'password' ] . "'";
-		$array = array_values(performQuery( $sql ));
-        outputJSON( $array[0] );
+        $response = performQuery( $sql );
+        if ( count( $response ) > 0 ) {
+            $response_array[ 'success' ] = true;
+            $result = array_merge( $response_array, $response[ 0 ] );
+            outputJSON( $result );
+        } else {
+            $result[ 'success' ] = false;
+            $result[ 'msg' ] = "Check User and Password";
+            outputJSON( $result );
+        }
         break;
     case "table/list":
         include 'functions/table_list.php';
@@ -124,8 +141,8 @@ switch ( strtolower( $value[ 0 ] ) ) {
         break;
     case "get/missedflag":
         $sql = "EXEC getLockflag_App '" . $SF_Code . "','" . $DivisionCode . "'";
-        $arr = performQuery( $sql );
-        $results[ "missflag" ] = $arr[ 0 ][ "missflag" ];
+        $response = performQuery( $sql );
+        $results[ "missflag" ] = $response[ 0 ][ "missflag" ];
         outputJSON( $results );
         break;
     case "dcr/save":
@@ -249,6 +266,10 @@ switch ( strtolower( $value[ 0 ] ) ) {
         $sql = "EXEC getDaycheckInReportApp '" . $SF_Code . "','" . $_GET[ 'rptDt' ] . "'";
         outputJSON( performQuery( $sql ) );
         break;
+    case "save/todaytp":
+        include 'functions/todaytp_save.php';
+        SvMyTodayTP();
+        break;
     case "save/tpdaynew":
         savetourplan( 0 );
         break;
@@ -294,12 +315,16 @@ switch ( strtolower( $value[ 0 ] ) ) {
         LeaveHistory( $SF_Code, $DivisionCode );
         break;
     case "vwleave":
-		include 'functions/leave.php';
-        ViewLeave( $SF_Code);
+        include 'functions/leave.php';
+        ViewLeave( $SF_Code );
         break;
     case "vwcheckleave":
-		include 'functions/leave.php';
+        include 'functions/leave.php';
         CheckLeaveStatus( $SF_Code, $Date_Format3 );
+        break;
+    case "leavevalidate":
+        include 'functions/leave.php';
+        LeaveValidation( $SF_Code, $data[ 'lv_type' ], $data[ 'fdate' ], $data[ 'todate' ] );
         break;
     case "vwproductdetailing":
         $query = "select ID,[FileName],FileSubject,Div_Code,Update_dtm,ContentType,[Data],Designation_Code,Designation_Short_Name from File_info div_code='$DivisionCode'";
@@ -328,14 +353,6 @@ switch ( strtolower( $value[ 0 ] ) ) {
         performQuery( $query );
         $results[ "success" ] = true;
         outputJSON( $results );
-        break;
-    case "leavevalidate":
-        $fdate = strtotime( str_replace( "Z", "", str_replace( "T", " ", $data[ 'fdate' ] ) ) );
-        $todate = strtotime( str_replace( "Z", "", str_replace( "T", " ", $data[ 'todate' ] ) ) );
-        $from = date( 'Y-m-d 00:00:00', $fdate );
-        $todt = date( 'Y-m-d 00:00:00', $todate );
-        $query = "exec iOS_getLvlValidate '" . $SF_Code . "','" . $from . "','" . $todt . "','" . $data[ 'lv_type' ] . "' ";
-        outputJSON( performQuery( $query ) );
         break;
     case "save/geotag":
         $div = ( string )str_replace( ",", "", $data[ 'divcode' ] );
@@ -371,26 +388,16 @@ switch ( strtolower( $value[ 0 ] ) ) {
         outputJSON( performQuery( $sql ) );
         break;
     case "entry/count":
-		include 'functions/entry_count.php';
-		EntryCount();
+        include 'functions/entry_count.php';
+        EntryCount();
         break;
     case "save/livetrack":
-        $query = "SELECT sf_emp_id,Employee_Id FROM Mas_Salesforce WHERE Sf_Code='$RSF_Code '";
-        $sf = performQuery( $query );
-        $empid = $sf[ 0 ][ 'sf_emp_id' ];
-        $employeeid = $sf[ 0 ][ 'Employee_Id' ];
-        $TrcLocs = $data;
-        for ( $ik = 0; $ik < count( $TrcLocs ); $ik++ ) {
-            $sql = "insert into tbTrackLoction(SF_code,Emp_Id,Employee_Id,DtTm,Lat,Lon,Addr,Auc,EMod,Battery,SF_Mobile,updatetime,IsOnline) select '$RSF_Code ','$empid','$employeeid','" . $TrcLocs[ $ik ][ 'time' ] . "','" . $TrcLocs[ $ik ][ 'Latitude' ] . "','" . $TrcLocs[ $ik ][ 'Longitude' ] . "','" . $TrcLocs[ $ik ][ 'Address' ] . "','','Apps','" . $TrcLocs[ $ik ][ 'Battery' ] . "','" . $TrcLocs[ $ik ][ 'Mobile' ] . "',getdate(),'" . $TrcLocs[ $ik ][ 'IsOnline' ] . "'";
-            performQuery( $sql );
-        }
-        $result = array();
-        $result[ 'success' ] = true;
-        outputJSON( $result );
+        include 'functions/live_tracking.php';
+        LiveTracking_Save( $RSF_Code );
         break;
     case "get/live_track_sf":
-        $query = "SELECT Sf_Code,Sf_Name,SF_Mobile FROM Mas_Salesforce WHERE Reporting_To_SF='" . $SF_Code . "'";
-        outputJSON( performQuery( $query ) );
+        include 'functions/live_tracking.php';
+        Get_SF_Track( $SF_Code );
         break;
     case "save/stockistprimary":
         include 'functions/secondary_save.php';
